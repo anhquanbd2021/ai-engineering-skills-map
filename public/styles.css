@@ -1,0 +1,591 @@
+/* ==========================================================================
+   Skills Demand Meter — "Ink & Circuit" redesign
+   Article Playbook house style: editorial serif display fused with
+   instrument-panel precision. Dark "bench" surfaces by default; paper
+   "folio" under prefers-color-scheme: light.
+   Components consume semantic tokens only — no raw hex outside :root.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   §3  TOKENS
+   -------------------------------------------------------------------------- */
+:root {
+  /* 3a. color — dark (default) */
+  --bg: #0C1117;
+  --surface: #131B24;
+  --surface-2: #1B2634;
+  --line: #2A3646;
+  --line-soft: #1E2936;
+  --ink: #E8EEF4;
+  --ink-2: #AEB9C7;
+  --ink-3: #8A99AB;
+  --accent: #2DD4BF;
+  --accent-solid: #2DD4BF;
+  --on-accent: #06231F;
+  --warn: #F2C14E;
+  --warn-bg: #2A2113;
+  --on-pal: #08131C;
+  --pal-0: #2DD4BF;
+  --pal-1: #F0B452;
+  --pal-2: #7FA8F0;
+  --pal-3: #C79BF2;
+  --pal-0-fg: var(--pal-0);
+  --pal-1-fg: var(--pal-1);
+  --pal-2-fg: var(--pal-2);
+  --pal-3-fg: var(--pal-3);
+  --hatch: #3A4A5E;
+
+  /* 3c. legacy aliases — guide.html's inline <style> reads these */
+  --teal: #2DD4BF;
+  --dim: #2A3646;
+
+  /* 3d. type scale (root font-size 16px; all rem) */
+  --fs-display: 2.125rem;
+  --fs-h2: 1.125rem;
+  --fs-lede: 1.0625rem;
+  --fs-body: 1rem;
+  --fs-sm: 0.875rem;
+  --fs-xs: 0.8125rem;
+  --fs-micro: 0.75rem;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+
+  /* 3e. space */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+
+  /* radius */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-pill: 999px;
+
+  /* shadow — dark */
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, .4);
+  --shadow-2: 0 12px 32px rgba(0, 0, 0, .45);
+
+  /* motion */
+  --dur-1: 120ms;
+  --dur-2: 180ms;
+  --dur-3: 320ms;
+  --ease-out: cubic-bezier(.22, .9, .28, 1);
+  --ease-in: cubic-bezier(.5, 0, .75, 0);
+  --ease-spring: cubic-bezier(.34, 1.3, .5, 1);
+
+  color-scheme: dark;
+}
+
+/* 3b. color — light (paper folio) */
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #F6F4EE;
+    --surface: #FFFFFF;
+    --surface-2: #EFEBE2;
+    --line: #D8D2C4;
+    --line-soft: #E6E1D5;
+    --ink: #1C2530;
+    --ink-2: #47535F;
+    --ink-3: #5F6B78;
+    --accent: #0C6E64;
+    --accent-solid: #0C6E64;
+    --on-accent: #FFFFFF;
+    --warn: #8A5A00;
+    --warn-bg: #FBF0DC;
+    --on-pal: #FFFFFF;
+    --pal-0: #109B8F;
+    --pal-1: #C2913A;
+    --pal-2: #4E7EC9;
+    --pal-3: #9468C7;
+    --pal-0-fg: #0C6E62;
+    --pal-1-fg: #8A5E0E;
+    --pal-2-fg: #2D5CA0;
+    --pal-3-fg: #6B3FB4;
+    --hatch: #B9B2A2;
+    --teal: #0C6E64;
+    --dim: #D8D2C4;
+    --shadow-1: 0 1px 2px rgba(28, 37, 48, .08);
+    --shadow-2: 0 12px 32px rgba(28, 37, 48, .12);
+    color-scheme: light;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+* { box-sizing: border-box; }
+
+html { font-size: 16px; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  /* clearance for the fixed .pb-shell pill (§2.6) */
+  padding-bottom: calc(var(--sp-9) + 40px);
+}
+
+.skip-link,
+.examples button,
+.lvl,
+footer a,
+main a {
+  touch-action: manipulation;
+}
+
+/* --------------------------------------------------------------------------
+   §2.1  Skip link — visually hidden until :focus-visible, then a fixed
+         top-left chip (z-index 2000, below .pb-shell's own layer)
+   -------------------------------------------------------------------------- */
+.skip-link {
+  position: fixed;
+  top: var(--sp-3);
+  left: var(--sp-3);
+  z-index: 2000;
+  padding: var(--sp-3);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-micro);
+  line-height: 1.4;
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  text-decoration: none;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.skip-link:focus-visible {
+  clip: auto;
+  clip-path: none;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   §2  Shared column — header, main, .verdict, footer
+   -------------------------------------------------------------------------- */
+header,
+main,
+.verdict,
+footer {
+  max-width: 1080px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 4vw, 40px);
+}
+
+#skills,
+#guide {
+  scroll-margin-top: var(--sp-5);
+}
+
+/* --------------------------------------------------------------------------
+   §4a  Masthead
+   -------------------------------------------------------------------------- */
+header { padding-top: var(--sp-9); }
+
+.kicker {
+  margin: 0 0 var(--sp-3);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-micro);
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--ink-3);
+}
+
+h1 {
+  margin: 0 0 var(--sp-3);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-display);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.sub {
+  margin: 0 0 var(--sp-5);
+  max-width: 68ch;
+  font-size: var(--fs-lede);
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.sub em { font-style: italic; color: var(--ink); }
+
+/* --------------------------------------------------------------------------
+   §4b  Method note — the demo's honesty disclosure, visually prominent
+   -------------------------------------------------------------------------- */
+.honest {
+  margin: 0;
+  max-width: 68ch;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--warn-bg);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--warn);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* --------------------------------------------------------------------------
+   §4c  Example presets — secondary chip-actions, no primary CTA by design
+   -------------------------------------------------------------------------- */
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-5);
+}
+.examples span {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-micro);
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--ink-3);
+}
+.examples button {
+  font: 500 var(--fs-xs) var(--font-ui);
+  padding: 7px var(--sp-3);
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: color var(--dur-1) var(--ease-out),
+              background-color var(--dur-1) var(--ease-out),
+              border-color var(--dur-1) var(--ease-out),
+              transform var(--dur-1) var(--ease-out);
+}
+
+/* --------------------------------------------------------------------------
+   §4d  Skill cards — grid of four clusters, reading order 1–4
+   -------------------------------------------------------------------------- */
+main {
+  display: grid;
+  gap: var(--sp-5);
+  margin-top: var(--sp-7);
+}
+
+.skill {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow-1);
+}
+.skill h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: 0 0 var(--sp-3);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-h2);
+  line-height: 1.3;
+  color: var(--ink);
+}
+.num {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+  color: var(--on-pal);
+}
+.num.pal0 { background: var(--pal-0-fg); }
+.num.pal1 { background: var(--pal-1-fg); }
+.num.pal2 { background: var(--pal-2-fg); }
+.num.pal3 { background: var(--pal-3-fg); }
+
+.summary {
+  margin: 0 0 var(--sp-3);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.basis {
+  margin: 0 0 var(--sp-4);
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.basis strong {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--ink);
+}
+.dim {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-micro);
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+
+/* --------------------------------------------------------------------------
+   §4e  Meter bars — hatched "editorial estimate" vs. solid self-report
+   -------------------------------------------------------------------------- */
+.bars { margin-bottom: var(--sp-3); }
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: var(--sp-2) 0;
+}
+.bar-label {
+  flex: none;
+  width: 92px; /* <560px default; widens to 118px at ≥560px */
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-micro);
+  line-height: 1.4;
+  text-transform: lowercase;
+  text-align: right;
+  color: var(--ink-3);
+}
+.bar {
+  flex: 1;
+  min-width: 0;
+  height: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+.fill {
+  width: 0; /* JS drives width via the .style API (CSP-safe) */
+  height: 100%;
+  border-radius: var(--r-pill);
+  transition: width var(--dur-3) var(--ease-out);
+}
+.fill.emphasis {
+  background: var(--line) repeating-linear-gradient(
+    45deg, var(--hatch) 0 6px, transparent 6px 12px);
+}
+.fill.coverage.pal0 { background: var(--pal-0); }
+.fill.coverage.pal1 { background: var(--pal-1); }
+.fill.coverage.pal2 { background: var(--pal-2); }
+.fill.coverage.pal3 { background: var(--pal-3); }
+
+/* --------------------------------------------------------------------------
+   §4f  Signal rows — name + segmented 0–3 control + level read-out
+   -------------------------------------------------------------------------- */
+.signals {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.signals li {
+  display: flex;
+  flex-wrap: wrap; /* <560px: .sig-name takes row 1, controls + level row 2 */
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+  border-top: 1px solid var(--line-soft);
+  min-height: 44px;
+}
+.sig-name {
+  flex: 1 1 100%;
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+  color: var(--ink);
+  overflow-wrap: anywhere; /* long sub-skill names wrap, never truncate */
+}
+.sig-controls {
+  flex: none;
+  display: flex;
+  /* wrap layout (<560px): .lvl targets keep >=8px separation (spec §7.9);
+     the 2px segmented look is restored at >=560px below */
+  gap: var(--sp-2);
+  padding: var(--sp-1);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+}
+.lvl {
+  width: 32px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+  transition: color var(--dur-1) var(--ease-out),
+              background-color var(--dur-1) var(--ease-out),
+              border-color var(--dur-1) var(--ease-out),
+              transform var(--dur-1) var(--ease-out);
+}
+.lvl.on {
+  background: var(--accent-solid);
+  color: var(--on-accent);
+  font-weight: 600;
+  transition-timing-function: var(--ease-spring);
+}
+.sig-level {
+  flex: none;
+  width: 88px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-micro);
+  line-height: 1.4;
+  text-align: right;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   §4g  Verdict read-out — elevated panel, distinct from skill cards
+   -------------------------------------------------------------------------- */
+.verdict {
+  margin-top: var(--sp-7);
+  /* §2 column gutter lives on the margin here: the padding shorthand below
+     must remain §4g's inner padding, so padding-inline can't carry the gutter */
+  margin-inline: max(clamp(20px, 4vw, 40px), calc((100% - 1080px) / 2));
+  padding: var(--sp-5) var(--sp-6);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-2);
+}
+.verdict h2 {
+  margin: 0 0 var(--sp-3);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-h2);
+  line-height: 1.3;
+  color: var(--ink);
+}
+.verdict p {
+  margin: var(--sp-2) 0;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.verdict p strong { color: var(--ink); }
+.verdict ul.flags {
+  margin: var(--sp-3) 0;
+  padding-left: var(--sp-5);
+  color: var(--warn);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+.verdict ul.flags li { margin: var(--sp-2) 0; }
+.verdict p.dim {
+  border-top: 1px solid var(--line-soft);
+  padding-top: var(--sp-3);
+}
+
+/* --------------------------------------------------------------------------
+   §4h  Footer — small print; guide back-link shares these link styles
+   -------------------------------------------------------------------------- */
+footer {
+  padding-block: var(--sp-6) var(--sp-9);
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+footer a,
+main a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   §5  Interactions — hover gated to (hover:hover); transform-only :active;
+       the accent :focus-visible ring is never removed
+   -------------------------------------------------------------------------- */
+@media (hover: hover) {
+  .examples button:hover { border-color: var(--accent); }
+  .lvl:not(.on):hover { color: var(--ink); }
+  footer a:hover,
+  main a:hover { color: var(--ink); }
+}
+
+.examples button:active,
+.lvl:active {
+  transform: scale(.96);
+}
+
+.examples button:focus-visible,
+footer a:focus-visible,
+main a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.lvl:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* --------------------------------------------------------------------------
+   §6  Responsive — mobile-first
+   -------------------------------------------------------------------------- */
+@media (min-width: 560px) {
+  /* signal rows go single-line; controls read as one segmented unit */
+  .signals li { flex-wrap: nowrap; }
+  .sig-name { flex: 1; }
+  .sig-controls { gap: 2px; padding: 2px; }
+  .bar-label { width: 118px; }
+}
+
+@media (min-width: 960px) {
+  /* #skills becomes two equal columns */
+  main { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* --------------------------------------------------------------------------
+   §6  Reduced motion — everything snaps; pb-shell handles itself
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .skip-link,
+  .examples button,
+  .lvl,
+  .fill,
+  footer a,
+  main a {
+    transition: none !important;
+    animation: none !important;
+  }
+  .examples button:active,
+  .lvl:active {
+    transform: none;
+  }
+}

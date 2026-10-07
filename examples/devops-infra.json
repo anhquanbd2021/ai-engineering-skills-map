@@ -1,0 +1,10 @@
+{
+  "name": "DevOps / platform engineer",
+  "note": "Deep fundamentals and solid agent use; thin on AI-app construction and spec-shaping.",
+  "ratings": {
+    "build-deploy-ai": [1, 1, 1, 2, 1, 1],
+    "engineering-fundamentals": [3, 3, 2, 3, 2],
+    "coding-agents": [2, 2, 2, 1, 1, 1, 2],
+    "shaping-the-build": [1, 1, 1, 1, 1]
+  }
+}

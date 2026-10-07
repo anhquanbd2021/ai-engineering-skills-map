@@ -1,0 +1,10 @@
+{
+  "name": "New graduate",
+  "note": "Fundamentals started, everything else early — the meter shows where to aim first.",
+  "ratings": {
+    "build-deploy-ai": [1, 0, 0, 1, 0, 0],
+    "engineering-fundamentals": [2, 1, 1, 2, 1],
+    "coding-agents": [1, 1, 0, 0, 1, 0, 0],
+    "shaping-the-build": [1, 0, 0, 0, 1]
+  }
+}

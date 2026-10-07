@@ -1,0 +1,16 @@
+{
+  "name": "ai-engineering-skills-map-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Skills Demand Meter — profile yourself against the four skill clusters in DeepLearning.AI's AI Engineering Skills Map (10,000+ job postings).",
+  "scripts": {
+    "start": "node app/server.js",
+    "report": "node scripts/report.mjs",
+    "test": "node --test \"test/*.test.mjs\"",
+    "check": "npm test && npm run report"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

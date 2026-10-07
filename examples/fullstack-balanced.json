@@ -1,0 +1,10 @@
+{
+  "name": "Full-stack, balanced T",
+  "note": "Practicing across all four skills, deepest in fundamentals.",
+  "ratings": {
+    "build-deploy-ai": [2, 2, 2, 1, 2, 2],
+    "engineering-fundamentals": [2, 3, 2, 2, 2],
+    "coding-agents": [3, 2, 2, 2, 2, 1, 2],
+    "shaping-the-build": [2, 2, 1, 2, 1]
+  }
+}
